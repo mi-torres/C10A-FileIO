@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 public class ScoreTrakker {
 	private ArrayList<Student> studentList;
+	private String[] files = {"scores.txt","badscore.txt","nofile.txt"};
 	
 	public ScoreTrakker() {
 		this.studentList = new ArrayList<Student>();
@@ -25,10 +26,22 @@ public class ScoreTrakker {
 			if(!in.hasNextLine()) {
 				System.out.println("Uh oh");
 			}
-			int score = Integer.parseInt(in.nextLine());
-			Student tempStudent = new Student(name, score);
-			studentList.add(tempStudent);
+			int score = 0;
+			boolean validStudent = true;
+			String scoreLine = in.nextLine();
+			try {
+				score = Integer.parseInt(scoreLine);	
+			} catch (NumberFormatException e) {
+				System.out.println("Incorrect format for " + name + " not a valid score: " + scoreLine);
+				System.out.println("");
+				validStudent = false;
+			}
+			if(validStudent) {
+				Student tempStudent = new Student(name, score);
+				this.studentList.add(tempStudent);
+				}
 		}
+
 	}
 	
 	void printInOrder() {
@@ -38,10 +51,14 @@ public class ScoreTrakker {
 		 * Try to use an iterated for loop (for each), rather than a counter-controlled loop 
 		 * (i.e., no for (int i=0; )
 		 */
+		System.out.println("Student Score List");
+		
 		Collections.sort(this.studentList);
 		for (Student currStudent : this.studentList) {
 			System.out.println(currStudent);
 		}
+		
+		System.out.println("");
 	}
 	
 	void processFiles() throws FileNotFoundException {
@@ -50,9 +67,20 @@ public class ScoreTrakker {
 		 * Call the loadDataFile() method passing in the name of a correctly formatted file ("scores.txt").
 		 * Call the printInOrder() method.
 		 */
-		String fileName = "scores.txt";
-		this.loadDataFile(fileName);
-		this.printInOrder();
+		
+		for (String currentFile : this.files) {
+			
+			this.studentList.clear();
+			try {
+				this.loadDataFile(currentFile);
+				this.printInOrder();
+			} catch(FileNotFoundException e) {
+				System.out.println("Can't open file: " + currentFile);
+				System.out.println("");
+				
+			}
+		}
+		
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException {
